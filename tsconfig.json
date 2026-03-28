@@ -9,8 +9,6 @@
 			"@db/*": [
 				"./db/*"
 			]
-		},
-		"jsx": "react-jsx",
-		"jsxImportSource": "react"
+		}
 	}
 }
