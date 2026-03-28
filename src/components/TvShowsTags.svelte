@@ -12,7 +12,7 @@
   }>();
 </script>
 
-<div class="mt-5 grid auto-rows-fr grid-cols-2 gap-4 px-4 py-5 md:grid-cols-3 md:px-8 lg:grid-cols-5 xl:flex">
+<div class="mt-5 grid auto-rows-fr grid-cols-2 gap-4 px-4 py-5 md:grid-cols-3 md:justify-items-end md:px-8 lg:grid-cols-5 xl:flex xl:justify-end">
   {#each Object.values(TvShowsThemes) as tag (tag)}
     <Button
       size="sm"

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
   import useEmblaCarousel from "embla-carousel-svelte";
+  import { fromAction } from "svelte/attachments";
   import type { Podcast } from "@/types/resources";
   import ImageSkeleton from "./ImageSkeleton.svelte";
 
@@ -41,7 +42,7 @@
   <div
     class="embla__viewport"
     onemblaInit={handleEmblaInit}
-    use:emblaAction={{ options }}
+    {@attach fromAction(emblaAction, () => ({ options }))}
   >
     <div class="embla__container">
       {#each podcasts as podcast (podcast.title)}
@@ -66,12 +67,13 @@
               <img
                 src={getImageSrc(podcast.image)}
                 alt="podcast"
-                style="view-transition-name: {podcast.slug ? podcast.slug : podcast.title.replaceAll(' ', '')};"
+                style:view-transition-name={podcast.slug ? podcast.slug : podcast.title.replaceAll(" ", "")}
                 loading="lazy"
                 onload={(e) => {
                   const prev = (e.target as HTMLImageElement).previousElementSibling as HTMLDivElement;
                   if (prev) prev.style.display = "none";
                 }}
+                class="block size-full object-cover"
               />
             </ImageSkeleton>
           </a>

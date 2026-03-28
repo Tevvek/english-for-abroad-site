@@ -90,9 +90,11 @@ const resolvedImage = resolveResourceImage(image) ?? image;
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center justify-center gap-x-2 rounded-full px-12 uppercase tracking-[0.18em]"
+            variant="secondary"
+            size="lg"
+            class="w-full rounded-full xl:w-fit"
           >
-            <div class="size-6 rounded-full overflow-hidden">
+            <div class="size-5 shrink-0">
               <Korea />
             </div>
             한국에서 시청하기
@@ -141,10 +143,10 @@ const resolvedImage = resolveResourceImage(image) ?? image;
             class="group"
           >
             <UiCard class={cn(
-              "h-[392px] p-4 transition-transform group-hover:-translate-y-1",
-              "xs:grid xs:h-60 xs:grid-cols-[auto_1fr] xs:grid-rows-[auto_1fr] xs:gap-x-4",
-              "md:grid md:h-[392px] md:grid-cols-1 md:grid-rows-[min-content_min-content_auto]",
-              "lg:grid lg:h-60 lg:grid-cols-[auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4"
+              "h-[480px] p-4 transition-transform group-hover:-translate-y-1",
+              "xs:grid xs:h-72 xs:grid-cols-[auto_1fr] xs:grid-rows-[auto_1fr] xs:gap-x-4",
+              "md:grid md:h-[460px] md:grid-cols-1 md:grid-rows-[min-content_min-content_auto]",
+              "lg:grid lg:h-72 lg:grid-cols-[auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4"
             )}>
             <h3
               class={cn(
@@ -167,22 +169,22 @@ const resolvedImage = resolveResourceImage(image) ?? image;
               {tpd.longDescription}
             </p>
 
-            <ImageSkeleton
-              class={cn(
-                "self-end max-w-48 w-full place-self-center aspect-[2/3]",
-                "xs:max-w-36 xs:col-start-1 xs:row-start-1 xs:row-span-2",
-                "md:max-w-48 md:col-start-1 md:row-start-3 md:row-span-1",
-                "lg:max-w-36 lg:col-start-1 lg:row-start-1 lg:row-span-2",
-              )}
-            >
-              <Image
-                src={resolveResourceImage(tpd.image) ?? tpd.image}
-                alt={title}
-                transition:name={tpd.title.replaceAll(" ", "")}
-                class="h-full object-cover"
-                loading="eager"
-                width={192}
-                height={288}
+              <ImageSkeleton
+                class={cn(
+                  "self-end max-w-48 w-full place-self-center aspect-[2/3]",
+                  "xs:max-w-36 xs:col-start-1 xs:row-start-1 xs:row-span-2",
+                  "md:max-w-52 md:col-start-1 md:row-start-3 md:row-span-1",
+                  "lg:max-w-36 lg:col-start-1 lg:row-start-1 lg:row-span-2",
+                )}
+              >
+                <Image
+                  src={resolveResourceImage(tpd.image) ?? tpd.image}
+                  alt={title}
+                  transition:name={tpd.title.replaceAll(" ", "")}
+                  class="block size-full object-cover"
+                  loading="eager"
+                  width={192}
+                  height={288}
               />
             </ImageSkeleton>
             </UiCard>

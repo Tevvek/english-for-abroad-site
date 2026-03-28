@@ -5,15 +5,16 @@ import Navbar from "@/components/Navbar.astro";
 
 interface Props {
   title: string;
+  showFixedCTA?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, showFixedCTA = true } = Astro.props;
 ---
 
 <Layout title={title}>
   <Navbar slot="navbar" />
 
-  <FixedCTA slot="fixed-cta" />
+  {showFixedCTA && <FixedCTA slot="fixed-cta" />}
 
   <slot />
 </Layout>

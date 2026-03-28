@@ -84,7 +84,7 @@
   }
 </script>
 
-<form onsubmit={handleSubmit} class="space-y-4 max-w-md mx-auto relative" novalidate>
+<form onsubmit={handleSubmit} class="relative mx-auto max-w-md space-y-4" novalidate>
   <div>
     <Input
       name="name"
@@ -92,7 +92,7 @@
       bind:value={form.name}
       oninput={() => setField("name", form.name)}
       aria-invalid={errors.name ? "true" : undefined}
-      class="h-12 border-0 bg-input text-center shadow-none"
+      class="h-10"
     />
     {#if errors.name}
       <p class="text-destructive text-sm mt-1">{errors.name}</p>
@@ -107,7 +107,7 @@
       bind:value={form.email}
       oninput={() => setField("email", form.email)}
       aria-invalid={errors.email ? "true" : undefined}
-      class="h-12 border-0 bg-input text-center shadow-none"
+      class="h-10"
     />
     {#if errors.email}
       <p class="text-destructive text-sm mt-1">{errors.email}</p>
@@ -115,7 +115,7 @@
   </div>
 
   <div>
-    <Label class="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
+    <Label class="flex w-full items-start gap-3 text-left text-sm leading-6 text-muted-foreground">
       <Checkbox
         name="consent"
         bind:checked={form.consent}
@@ -123,23 +123,27 @@
         aria-invalid={errors.consent ? "true" : undefined}
         class="mt-1"
       />
-      <span>I agree to receive emails from English for Abroad. I can unsubscribe at any time.</span>
+      <span class="flex-1 [text-wrap:wrap]">
+        I agree to receive emails from English for Abroad. I can unsubscribe at any time.
+      </span>
     </Label>
     {#if errors.consent}
       <p class="text-destructive text-sm mt-1">{errors.consent}</p>
     {/if}
   </div>
 
-  <Button
-    type="submit"
-    disabled={isSubmitting}
-    class="h-12 w-full gap-2 text-base uppercase tracking-[0.18em]"
-  >
-    {#if isSubmitting}
-      <Loader2 class="animate-spin" />
-      Submitting...
-    {:else}
-      {buttonText}
+    <Button
+      type="submit"
+      variant="secondary"
+      size="lg"
+      disabled={isSubmitting}
+      class="w-full"
+    >
+      {#if isSubmitting}
+        <Loader2 class="mr-2 animate-spin" />
+        Submitting...
+      {:else}
+        {buttonText}
     {/if}
   </Button>
 </form>

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onDestroy } from "svelte";
+  import { onDestroy, type Snippet } from "svelte";
   import Menu from "lucide-svelte/icons/menu";
   import X from "lucide-svelte/icons/x";
-  import { buttonVariants } from "@/components/ui/button";
-  import { NAV } from "@/utils/constants";
-  
-  let { children } = $props<{ children?: any }>();
-  let isOpen = $state(false);
+	import { buttonVariants } from "@/components/ui/button";
+	import { NAV } from "@/utils/constants";
+	
+	let { children, logoOnly = false } = $props<{ children?: Snippet; logoOnly?: boolean }>();
+	let isOpen = $state(false);
 
   function updateScrollbarWidth() {
     if (typeof window === "undefined") return;
@@ -42,11 +42,11 @@
 
 	<header
 	class="mobile-header sticky top-0 bg-background lg:hidden relative isolate z-navbar"
-	style:z-index={'var(--z-index-navbar)'}
-	style:margin-right={isOpen ? "calc(-1 * var(--scroll-offset))" : ""}
+	style:z-index="var(--z-index-navbar)"
+	style:margin-right={!logoOnly && isOpen ? "calc(-1 * var(--scroll-offset))" : ""}
 >
 	<div class="pointer-events-none absolute inset-x-0 top-full h-12 bg-gradient-to-b from-background via-background/85 to-transparent"></div>
-	<div class="mobile-visible-navbar grid grid-cols-[1fr_auto_1fr] bg-background px-4 py-4" style:padding-right="calc(1rem + var(--scroll-offset, 0px))">
+	<div class="mobile-visible-navbar grid grid-cols-[1fr_auto_1fr] bg-background px-4 py-4" style:padding-right={!logoOnly ? "calc(1rem + var(--scroll-offset, 0px))" : undefined}>
 	  <div class="col-start-2">
 	    <a href="/#" class="block w-[180px]">
         {#if children}
@@ -54,16 +54,18 @@
         {/if}
       </a>
     </div>
-	  <button aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"} onclick={toggleMenu} class="justify-self-end self-start rounded-md border bg-card p-2 text-foreground shadow-xs transition hover:bg-accent hover:text-accent-foreground">
-      {#if isOpen}
-        <X />
-      {:else}
-        <Menu />
-      {/if}
-    </button>
+	  {#if !logoOnly}
+	    <button aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"} onclick={toggleMenu} class="justify-self-end self-start rounded-md border bg-card p-2 text-foreground shadow-xs transition hover:bg-accent hover:text-accent-foreground">
+	        {#if isOpen}
+	          <X />
+	        {:else}
+	          <Menu />
+	        {/if}
+	      </button>
+	  {/if}
   </div>
 
-	{#if isOpen}
+	{#if !logoOnly && isOpen}
 	  <div
 		class="mobile-sliding-navbar animate-in fade-in slide-in-from-top-2 absolute top-full left-0 flex h-screen w-full flex-col gap-y-5 border-t bg-background px-8 py-8 text-foreground shadow-sm duration-300"
 		style:padding-right="calc(1rem + var(--scroll-offset, 0px))"

@@ -68,7 +68,7 @@ const { title } = Astro.props;
       async
       defer></script>
   </head>
-  <body class="min-h-screen bg-background text-foreground antialiased">
+  <body class="flex min-h-screen flex-col bg-background text-foreground antialiased">
     <Toaster position="bottom-center" client:only="svelte" transition:persist />
 
     <slot name="navbar" />

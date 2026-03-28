@@ -3,6 +3,7 @@ import "@/styles/global.css";
 import { Font } from "astro:assets";
 import { Toaster } from "@/components/ui/sonner";
 import { ClientRouter } from "astro:transitions";
+import Navbar from "@/components/Navbar.astro";
 
 interface Props {
   title?: string;
@@ -49,6 +50,7 @@ const {
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
     <Toaster client:only="svelte" position="bottom-center" />
+    <Navbar logoOnly />
     <slot />
   </body>
 </html>
