@@ -19,4 +19,8 @@ export const NAV = [
     text: "Contact",
     href: "#contact",
   },
+  {
+    text: "Resources",
+    href: "/resources",
+  },
 ];
