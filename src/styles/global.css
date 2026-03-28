@@ -37,9 +37,9 @@
   --sidebar-accent-foreground: oklch(0.2781 0.0296 256.848);
   --sidebar-border: oklch(0 0 0);
   --sidebar-ring: oklch(0.8622 0.0705 284.8269);
-  --font-sans: "Outfit", sans-serif;
-  --font-serif: "Young Serif", serif;
-  --font-mono: "Space Mono", monospace;
+  --font-sans: var(--astro-font-sans, "Outfit", sans-serif);
+  --font-serif: var(--astro-font-serif, "Young Serif", serif);
+  --font-mono: var(--astro-font-mono, "Space Mono", monospace);
   --shadow-color: #000000;
   --shadow-opacity: 1;
   --shadow-blur: 0px;
@@ -151,9 +151,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: Outfit, sans-serif;
-  --font-mono: Space Mono, monospace;
-  --font-serif: Young Serif, serif;
+  --font-sans: var(--astro-font-sans, "Outfit", sans-serif);
+  --font-mono: var(--astro-font-mono, "Space Mono", monospace);
+  --font-serif: var(--astro-font-serif, "Young Serif", serif);
   --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
   --tracking-tight: calc(var(--tracking-normal) - 0.025em);
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);

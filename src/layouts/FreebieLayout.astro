@@ -1,12 +1,6 @@
 ---
-import "@fontsource/outfit/400.css";
-import "@fontsource/outfit/500.css";
-import "@fontsource/outfit/600.css";
-import "@fontsource/outfit/700.css";
-import "@fontsource/young-serif/400.css";
-import "@fontsource/space-mono/400.css";
-import "@fontsource/space-mono/700.css";
 import "@/styles/global.css";
+import { Font } from "astro:assets";
 import { Toaster } from "@/components/ui/sonner";
 import { ClientRouter } from "astro:transitions";
 
@@ -25,6 +19,9 @@ const {
   <head>
     <!-- BASE -->
     <meta charset="UTF-8" />
+    <Font cssVariable="--astro-font-sans" />
+    <Font cssVariable="--astro-font-serif" />
+    <Font cssVariable="--astro-font-mono" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <ClientRouter />

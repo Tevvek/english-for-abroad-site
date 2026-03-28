@@ -1,5 +1,5 @@
 import svelte from "@astrojs/svelte";
-import { defineConfig, envField } from "astro/config";
+import { defineConfig, envField, fontProviders } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
@@ -9,6 +9,24 @@ import vercel from "@astrojs/vercel";
 // https://astro.build/config
 export default defineConfig({
   integrations: [svelte()],
+
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: "Outfit",
+      cssVariable: "--astro-font-sans",
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "Young Serif",
+      cssVariable: "--astro-font-serif",
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "Space Mono",
+      cssVariable: "--astro-font-mono",
+    },
+  ],
 
   vite: {
     plugins: [tailwindcss()],
