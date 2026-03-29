@@ -7,10 +7,33 @@
 
   let { podcasts } = $props<{ podcasts: Podcast[] }>();
 
-  const options: EmblaOptionsType = {
+  let options = {
     align: "start",
-    loop: true,
-  };
+    loop: podcasts.length > 1,
+    ssr: podcasts.length > 0 ? podcasts.map(() => 100) : [100],
+    breakpoints: {
+      '(min-width: 480px)': { 
+        loop: podcasts.length > 2,
+        ssr: podcasts.length > 0 ? podcasts.map(() => 50) : [50] 
+      },
+      '(min-width: 768px)': { 
+        loop: podcasts.length > 3,
+        ssr: podcasts.length > 0 ? podcasts.map(() => 33.333333) : [33.333333] 
+      },
+      '(min-width: 1024px)': { 
+        loop: podcasts.length > 4,
+        ssr: podcasts.length > 0 ? podcasts.map(() => 25) : [25] 
+      },
+      '(min-width: 1280px)': { 
+        loop: podcasts.length > 5,
+        ssr: podcasts.length > 0 ? podcasts.map(() => 20) : [20] 
+      },
+      '(min-width: 1536px)': { 
+        loop: podcasts.length > 6,
+        ssr: podcasts.length > 0 ? podcasts.map(() => 16.666666) : [16.666666] 
+      }
+    }
+  } as EmblaOptionsType;
   const emblaAction = useEmblaCarousel;
 
   let emblaApi = $state<EmblaCarouselType | null>(null);
@@ -36,7 +59,17 @@
   function getImageSrc(image: Podcast["image"]) {
     return typeof image === "string" ? image : image.src;
   }
+
+  let emblaServerApi = useEmblaCarousel({ options });
+  let renderSsrStyles = (!emblaApi);
 </script>
+
+
+{#if renderSsrStyles}
+  <div>
+    {@html '<style>' + emblaServerApi.ssrStyles('#podcasts-carousel-container', '.embla__slide') + '</style>'}
+  </div>
+{/if}
 
 <div class="embla">
   <div
@@ -44,25 +77,15 @@
     onemblaInit={handleEmblaInit}
     {@attach fromAction(emblaAction, () => ({ options }))}
   >
-    <div class="embla__container">
+    <div class="embla__container" id="podcasts-carousel-container">
       {#each podcasts as podcast (podcast.title)}
-        <div class="embla__slide">
+        <div class="embla__slide flex-[0_0_100%] min-[480px]:flex-[0_0_50%] md:flex-[0_0_33.3333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] 2xl:flex-[0_0_16.6666%]">
           <a
             href={podcast.url}
-            class="grid h-80 grid-rows-[min-content_min-content_auto] gap-x-4 rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition duration-300 hover:-translate-y-1 xs:h-44 xs:grid-cols-[auto_1fr] xs:grid-rows-[auto_1fr]"
+            class="flex h-full w-full flex-col items-start gap-4 rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition duration-300 hover:-translate-y-1"
           >
-            <h3 class="font-bold xs:col-start-2 xs:row-start-1">
-              {podcast.title}
-            </h3>
-            <p
-              class="mb-2 text-sm line-clamp-2 xs:col-start-2 xs:row-start-2 xs:mb-0 xs:line-clamp-6"
-              title={podcast.shortDescription}
-            >
-              {podcast.shortDescription}
-            </p>
-
             <ImageSkeleton
-              class="aspect-square w-48 self-end place-self-center rounded-xl bg-muted xs:col-start-1 xs:row-span-2 xs:w-36"
+              class="aspect-square w-full shrink-0 rounded-xl bg-muted"
             >
               <img
                 src={getImageSrc(podcast.image)}
@@ -74,16 +97,27 @@
                   const prev = (e.target as HTMLImageElement).previousElementSibling as HTMLDivElement;
                   if (prev) prev.style.display = "none";
                 }}
-                class="block size-full object-cover"
+                class="block size-full object-contain"
               />
             </ImageSkeleton>
+            <div class="flex w-full min-w-0 flex-1 flex-col items-start justify-start">
+              <h3 class="line-clamp-1 font-bold">
+                {podcast.title}
+              </h3>
+              <p
+                class="mt-2 line-clamp-4 text-sm"
+                title={podcast.longDescription}
+              >
+                {podcast.longDescription}
+              </p>
+            </div>
           </a>
         </div>
       {/each}
 
       {#if podcasts.length === 0}
-        <div class="embla__slide">
-          <div class="flex h-44 items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
+        <div class="embla__slide flex-[0_0_100%] min-[480px]:flex-[0_0_50%] md:flex-[0_0_33.3333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] 2xl:flex-[0_0_16.6666%]">
+          <div class="flex h-full w-full items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
             <p>Coming soon! 🚀</p>
           </div>
         </div>
@@ -116,13 +150,14 @@
 
   .embla__container {
     display: flex;
+    align-items: stretch;
     gap: 0;
     touch-action: pan-y pinch-zoom;
   }
 
   .embla__slide {
+    display: flex;
     box-sizing: border-box;
-    flex: 0 0 100%;
     min-width: 0;
     padding: 0.5rem 0.75rem 2.5rem;
   }
@@ -146,22 +181,4 @@
     transform: scale(1.1);
   }
 
-  @media (min-width: 1024px) {
-    .embla__slide {
-      flex-basis: 50%;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .embla__slide {
-      flex-basis: 33.3333%;
-    }
-  }
-
-  @media (min-width: 2560px) {
-    .embla__slide {
-      flex-basis: 25%;
-    }
-  }
-
-</style>
+  </style>

@@ -3,6 +3,7 @@
   import type { EmblaOptionsType } from "embla-carousel";
   import Autoplay from "embla-carousel-autoplay";
   import { Star } from "lucide-svelte";
+  import { fromAction } from "svelte/attachments";
 
   interface Testimonial {
     student: string;
@@ -97,10 +98,25 @@
     },
   ];
 
-  const options: EmblaOptionsType = {
+  const options = {
     align: "start",
-    loop: true,
-  };
+    loop: TESTIMONIALS.length > 1,
+    ssr: TESTIMONIALS.length > 0 ? TESTIMONIALS.map(() => 100) : [100],
+    breakpoints: {
+      '(min-width: 768px)': { 
+        loop: TESTIMONIALS.length > 2,
+        ssr: TESTIMONIALS.length > 0 ? TESTIMONIALS.map(() => 50) : [50] 
+      },
+      '(min-width: 1024px)': { 
+        loop: TESTIMONIALS.length > 3,
+        ssr: TESTIMONIALS.length > 0 ? TESTIMONIALS.map(() => 33.333333) : [33.333333] 
+      },
+      '(min-width: 1440px)': { 
+        loop: TESTIMONIALS.length > 4,
+        ssr: TESTIMONIALS.length > 0 ? TESTIMONIALS.map(() => 25) : [25] 
+      }
+    }
+  } as EmblaOptionsType;
   const emblaAction = useEmblaCarousel;
 
   const plugins = [
@@ -109,13 +125,31 @@
       stopOnInteraction: true,
     }),
   ];
+
+  let emblaApi = $state<any>(null);
+  let emblaServerApi = useEmblaCarousel({ options, plugins });
+  let renderSsrStyles = (!emblaApi);
+
+  function handleEmblaInit(event: CustomEvent<any>) {
+    emblaApi = event.detail;
+  }
 </script>
 
+{#if renderSsrStyles}
+  <div>
+    {@html '<style>' + emblaServerApi.ssrStyles('#testimonials-carousel-container', '.embla__slide') + '</style>'}
+  </div>
+{/if}
+
 <div class="embla">
-  <div class="embla__viewport" use:emblaAction={{ options, plugins }}>
-    <div class="embla__container">
+  <div
+    class="embla__viewport"
+    onemblaInit={handleEmblaInit}
+    {@attach fromAction(emblaAction, () => ({ options, plugins }))}
+  >
+    <div class="embla__container" id="testimonials-carousel-container">
       {#each TESTIMONIALS as testimonial (testimonial.student + testimonial.platform)}
-        <div class="embla__slide">
+        <div class="embla__slide flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.3333%] 2xl:flex-[0_0_25%]">
           <div class="space-y-2 rounded-xl border bg-card p-8 text-card-foreground shadow-sm">
             <p class="line-clamp-6" title={testimonial.opinion}>
               {testimonial.opinion}
@@ -151,26 +185,12 @@
   .embla__slide {
     box-sizing: border-box;
     min-width: 0;
-    flex: 0 0 100%;
     padding: 0.5rem 0.75rem 1rem;
   }
 
   @media (min-width: 768px) {
     .embla__slide {
-      flex-basis: 50%;
       padding-bottom: 1.5rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .embla__slide {
-      flex-basis: 33.3333%;
-    }
-  }
-
-  @media (min-width: 1440px) {
-    .embla__slide {
-      flex-basis: 25%;
     }
   }
 </style>

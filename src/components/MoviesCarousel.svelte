@@ -8,10 +8,29 @@
 
   let { movies } = $props<{ movies: Movie[] }>();
 
-  const options: EmblaOptionsType = {
+  let options = {
     align: "start",
-    loop: true,
-  };
+    loop: movies.length > 1,
+    ssr: movies.length > 0 ? movies.map(() => 100) : [100],
+    breakpoints: {
+      '(min-width: 768px)': { 
+        loop: movies.length > 2,
+        ssr: movies.length > 0 ? movies.map(() => 50) : [50] 
+      },
+      '(min-width: 1024px)': { 
+        loop: movies.length > 3,
+        ssr: movies.length > 0 ? movies.map(() => 33.333333) : [33.333333] 
+      },
+      '(min-width: 1280px)': { 
+        loop: movies.length > 4,
+        ssr: movies.length > 0 ? movies.map(() => 25) : [25] 
+      },
+      '(min-width: 2560px)': { 
+        loop: movies.length > 5,
+        ssr: movies.length > 0 ? movies.map(() => 20) : [20] 
+      }
+    }
+  } as EmblaOptionsType;
   const emblaAction = useEmblaCarousel;
 
   let emblaApi = $state<EmblaCarouselType | null>(null);
@@ -37,7 +56,16 @@
   function getViewTransitionName(movie: Movie) {
     return movie.slug ? movie.slug : movie.title.replaceAll(" ", "");
   }
+
+  let emblaServerApi = useEmblaCarousel({ options });
+  let renderSsrStyles = (!emblaApi);
 </script>
+
+{#if renderSsrStyles}
+  <div>
+    {@html '<style>' + emblaServerApi.ssrStyles('#movies-carousel-container', '.embla__slide') + '</style>'}
+  </div>
+{/if}
 
 <div class="embla">
   <div
@@ -45,9 +73,9 @@
     onemblaInit={handleEmblaInit}
     {@attach fromAction(emblaAction, () => ({ options }))}
   >
-    <div class="embla__container">
+    <div class="embla__container" id="movies-carousel-container">
       {#each movies as movie (movie.title)}
-        <div class="embla__slide">
+        <div class="embla__slide flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.3333%] xl:flex-[0_0_25%] min-[2560px]:flex-[0_0_20%]">
           <a
             href={movie.url}
             class={cn(
@@ -86,7 +114,7 @@
       {/each}
 
       {#if movies.length === 0}
-        <div class="embla__slide">
+        <div class="embla__slide flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.3333%] xl:flex-[0_0_25%] min-[2560px]:flex-[0_0_20%]">
           <div class="flex h-[392px] items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
             <p>Coming soon! 🚀</p>
           </div>
@@ -127,7 +155,6 @@
   .embla__slide {
     box-sizing: border-box;
     min-width: 0;
-    flex: 0 0 100%;
     padding: 0.5rem 0.75rem 2.5rem;
   }
 
@@ -148,29 +175,5 @@
   .embla__dot--selected {
     background: var(--primary);
     transform: scale(1.1);
-  }
-
-  @media (min-width: 768px) {
-    .embla__slide {
-      flex-basis: 50%;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .embla__slide {
-      flex-basis: 33.3333%;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .embla__slide {
-      flex-basis: 25%;
-    }
-  }
-
-  @media (min-width: 2560px) {
-    .embla__slide {
-      flex-basis: 20%;
-    }
   }
 </style>

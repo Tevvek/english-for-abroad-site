@@ -7,10 +7,33 @@
 
   let { tvShows } = $props<{ tvShows: TvShow[] }>();
 
-  const options: EmblaOptionsType = {
+  let options = {
     align: "start",
-    loop: true,
-  };
+    loop: tvShows.length > 1,
+    ssr: tvShows.length > 0 ? tvShows.map(() => 100) : [100],
+    breakpoints: {
+      '(min-width: 480px)': { 
+        loop: tvShows.length > 2,
+        ssr: tvShows.length > 0 ? tvShows.map(() => 50) : [50] 
+      },
+      '(min-width: 768px)': { 
+        loop: tvShows.length > 3,
+        ssr: tvShows.length > 0 ? tvShows.map(() => 33.333333) : [33.333333] 
+      },
+      '(min-width: 1024px)': { 
+        loop: tvShows.length > 4,
+        ssr: tvShows.length > 0 ? tvShows.map(() => 25) : [25] 
+      },
+      '(min-width: 1280px)': { 
+        loop: tvShows.length > 5,
+        ssr: tvShows.length > 0 ? tvShows.map(() => 20) : [20] 
+      },
+      '(min-width: 1536px)': { 
+        loop: tvShows.length > 6,
+        ssr: tvShows.length > 0 ? tvShows.map(() => 16.666666) : [16.666666] 
+      }
+    }
+  } as EmblaOptionsType;
   const emblaAction = useEmblaCarousel;
 
   let emblaApi = $state<EmblaCarouselType | null>(null);
@@ -40,7 +63,27 @@
   function getViewTransitionName(tvShow: TvShow) {
     return tvShow.slug ? tvShow.slug : tvShow.title.replaceAll(" ", "");
   }
+
+  function getAlignmentClasses(length: number) {
+    let classes = [];
+    if (length < 2) classes.push("min-[480px]:justify-end");
+    if (length < 3) classes.push("md:justify-end");
+    if (length < 4) classes.push("lg:justify-end");
+    if (length < 5) classes.push("xl:justify-end");
+    if (length < 6) classes.push("2xl:justify-end");
+    return classes.join(" ");
+  }
+
+  let emblaServerApi = useEmblaCarousel({ options });
+  let renderSsrStyles = (!emblaApi);
 </script>
+
+
+{#if renderSsrStyles}
+  <div>
+    {@html '<style>' + emblaServerApi.ssrStyles('#tvshows-carousel-container', '.embla__slide') + '</style>'}
+  </div>
+{/if}
 
 <div class="embla">
   <div
@@ -48,25 +91,15 @@
     onemblaInit={handleEmblaInit}
     {@attach fromAction(emblaAction, () => ({ options }))}
   >
-    <div class="embla__container">
+    <div class={`embla__container ${getAlignmentClasses(tvShows.length)}`} id="tvshows-carousel-container">
       {#each tvShows as tvShow (tvShow.title)}
-        <div class="embla__slide">
+        <div class="embla__slide flex-[0_0_100%] min-[480px]:flex-[0_0_50%] md:flex-[0_0_33.3333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] 2xl:flex-[0_0_16.6666%]">
           <a
             href={tvShow.url}
-            class="grid h-full grid-rows-[min-content_min-content_auto] gap-4 rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition duration-300 hover:-translate-y-1 xs:grid-cols-[auto_1fr] xs:grid-rows-[min-content_1fr]"
+            class="flex h-full w-full flex-col items-start gap-4 rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition duration-300 hover:-translate-y-1"
           >
-            <h3 class="font-bold xs:col-start-2 xs:row-start-1">
-              {tvShow.title}
-            </h3>
-            <p
-              class="text-sm line-clamp-2 xs:col-start-2 xs:row-start-2 xs:line-clamp-6"
-              title={tvShow.longDescription}
-            >
-              {tvShow.longDescription}
-            </p>
-
             <ImageSkeleton
-              class="aspect-[2/3] w-52 place-self-center rounded-xl bg-muted xs:col-start-1 xs:row-span-2 xs:w-40 md:w-56 lg:w-40"
+              class="aspect-[9/16] w-full shrink-0 rounded-xl bg-muted"
             >
               <img
                 src={getImageSrc(tvShow.image)}
@@ -78,16 +111,27 @@
                   const prev = (e.target as HTMLImageElement).previousElementSibling as HTMLDivElement;
                   if (prev) prev.style.display = "none";
                 }}
-                class="block size-full object-cover"
+                class="block size-full object-contain"
               />
             </ImageSkeleton>
+            <div class="flex w-full min-w-0 flex-1 flex-col items-start justify-start">
+              <h3 class="line-clamp-1 font-bold">
+                {tvShow.title}
+              </h3>
+              <p
+                class="mt-2 line-clamp-4 text-sm"
+                title={tvShow.longDescription}
+              >
+                {tvShow.longDescription}
+              </p>
+            </div>
           </a>
         </div>
       {/each}
 
       {#if tvShows.length === 0}
-        <div class="embla__slide">
-          <div class="flex h-full items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
+        <div class="embla__slide flex-[0_0_100%] min-[480px]:flex-[0_0_50%] md:flex-[0_0_33.3333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] 2xl:flex-[0_0_16.6666%]">
+          <div class="flex h-full w-full items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
             <p>Coming soon! 🚀</p>
           </div>
         </div>
@@ -129,7 +173,7 @@
     display: flex;
     box-sizing: border-box;
     min-width: 0;
-    flex: 0 0 100%;
+    
     padding: 0.5rem 0.75rem 2.5rem;
   }
 
@@ -152,27 +196,4 @@
     transform: scale(1.1);
   }
 
-  @media (min-width: 768px) {
-    .embla__slide {
-      flex-basis: 50%;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .embla__slide {
-      flex-basis: 33.3333%;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .embla__slide {
-      flex-basis: 25%;
-    }
-  }
-
-  @media (min-width: 2560px) {
-    .embla__slide {
-      flex-basis: 20%;
-    }
-  }
-</style>
+  </style>
