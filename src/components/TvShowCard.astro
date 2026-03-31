@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import ImageSkeleton from "@/components/ImageSkeleton.astro";
+import type { TvShow } from "@/types/resources";
+
+interface Props {
+  tvShow: TvShow;
+}
+
+const { tvShow } = Astro.props;
+const viewTransitionName = tvShow.slug ? tvShow.slug : tvShow.title.replaceAll(" ", "");
+---
+
+<a
+  href={tvShow.url}
+  class="flex h-full w-full flex-col items-start gap-4 rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition duration-300 hover:-translate-y-1"
+>
+  <ImageSkeleton class="aspect-[9/16] w-full shrink-0 rounded-xl bg-muted">
+    <Image
+      src={tvShow.image as ImageMetadata}
+      alt={tvShow.title}
+      transition:name={viewTransitionName}
+      loading="lazy"
+      width={192}
+      class="block size-full rounded-xl object-contain"
+    />
+  </ImageSkeleton>
+  <div class="flex w-full min-w-0 flex-1 flex-col items-start justify-start">
+    <h3 class="line-clamp-1 font-bold">{tvShow.title}</h3>
+    <p class="mt-2 line-clamp-4 text-sm" title={tvShow.longDescription}>
+      {tvShow.longDescription}
+    </p>
+  </div>
+</a>

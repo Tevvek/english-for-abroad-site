@@ -9,13 +9,16 @@ import { getCollection } from "astro:content";
 import RestLayout from "./RestLayout.astro";
 import { Button } from "@/components/ui/button";
 import { Card as UiCard } from "@/components/ui/card";
+import TvShowCard from "@/components/TvShowCard.astro";
 
 const { frontmatter } = Astro.props;
-const { title, longDescription, image, theme, link, slug } = frontmatter;
+const { title, longDescription, image, theme, link } = frontmatter;
+const slug = Astro.params.slug as string;
 
 const markdowns = await getCollection("tvShows");
 const tvShows = markdowns.map<any>((markdown) => ({
   ...markdown.data,
+  image: resolveResourceImage(markdown.data.image) ?? markdown.data.image,
   slug: markdown.id,
   url: `/resources/tvshows/${markdown.id}`,
 }));
@@ -136,61 +139,17 @@ const resolvedImage = resolveResourceImage(image) ?? image;
       >
         Similar TV Shows
       </h2>
-      {
-        similarTvShows.map((tpd) => (
-          <a
-            href={tpd.url}
-            class="group"
-          >
-            <UiCard class={cn(
-              "h-[480px] p-4 transition-transform group-hover:-translate-y-1",
-              "xs:grid xs:h-72 xs:grid-cols-[auto_1fr] xs:grid-rows-[auto_1fr] xs:gap-x-4",
-              "md:grid md:h-[460px] md:grid-cols-1 md:grid-rows-[min-content_min-content_auto]",
-              "lg:grid lg:h-72 lg:grid-cols-[auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4"
-            )}>
-            <h3
-              class={cn(
-                "font-bold line-clamp-2",
-                "xs:col-start-2 xs:row-start-1",
-                "md:col-start-1 md:row-start-1 ",
-                "lg:col-start-2 lg:row-start-1",
-              )}
-            >
-              {tpd.title}
-            </h3>
-            <p
-              class={cn(
-                "mb-2 text-sm text-muted-foreground line-clamp-2",
-                "xs:mb-0 xs:line-clamp-6 xs:col-start-2 xs:row-start-2",
-                "md:line-clamp-2 md:mb-2 md:col-start-1 md:row-start-2",
-                "lg:mb-0 lg:line-clamp-6 lg:col-start-2 lg:row-start-2 lg:h-fit",
-              )}
-            >
-              {tpd.longDescription}
-            </p>
-
-              <ImageSkeleton
-                class={cn(
-                  "self-end max-w-48 w-full place-self-center aspect-[2/3]",
-                  "xs:max-w-36 xs:col-start-1 xs:row-start-1 xs:row-span-2",
-                  "md:max-w-52 md:col-start-1 md:row-start-3 md:row-span-1",
-                  "lg:max-w-36 lg:col-start-1 lg:row-start-1 lg:row-span-2",
-                )}
-              >
-                <Image
-                  src={resolveResourceImage(tpd.image) ?? tpd.image}
-                  alt={title}
-                  transition:name={tpd.title.replaceAll(" ", "")}
-                  class="block size-full object-cover"
-                  loading="eager"
-                  width={192}
-                  height={288}
-              />
-            </ImageSkeleton>
-            </UiCard>
-          </a>
-        ))
-      }
+      <div
+        data-drag-scroll
+        class="flex snap-x snap-mandatory overflow-x-auto md:col-span-3"
+        style="scrollbar-width: none;"
+      >
+        {similarTvShows.map((tpd) => (
+          <div class="box-border flex shrink-0 basis-full snap-start px-3 py-2 pb-10 min-[480px]:basis-1/2 md:basis-1/3">
+            <TvShowCard tvShow={tpd} />
+          </div>
+        ))}
+      </div>
     </section>
   </main>
 

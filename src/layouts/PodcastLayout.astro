@@ -9,13 +9,16 @@ import ImageSkeleton from "@/components/ImageSkeleton.astro";
 import cn from "@/utils/cn";
 import resolveResourceImage from "@/utils/resolveResourceImage";
 import { getCollection } from "astro:content";
+import PodcastCard from "@/components/PodcastCard.astro";
 
 const { frontmatter } = Astro.props;
-const { title, longDescription, image, theme, link, slug } = frontmatter;
+const { title, longDescription, image, theme, link } = frontmatter;
+const slug = Astro.params.slug as string;
 
 const markdowns = await getCollection("podcasts");
 const podcasts = markdowns.map<any>((markdown) => ({
   ...markdown.data,
+  image: resolveResourceImage(markdown.data.image) ?? markdown.data.image,
   slug: markdown.id,
   url: `/resources/podcasts/${markdown.id}`,
 }));
@@ -103,60 +106,17 @@ const resolvedImage = resolveResourceImage(image) ?? image;
       >
         Similar podcasts
       </h2>
-      {
-        similarPodcasts.map((tpd) => (
-          <a
-            href={tpd.url}
-            class="group"
-          >
-            <UiCard class={cn(
-              "h-80 p-4 transition-transform group-hover:-translate-y-1",
-              "xs:grid xs:h-44 xs:grid-cols-[auto_1fr] xs:grid-rows-[auto_1fr] xs:gap-x-4",
-              "md:grid md:h-80 md:grid-cols-1 md:grid-rows-[min-content_min-content_auto]",
-              "lg:grid lg:h-44 lg:grid-cols-[auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4"
-            )}>
-            <h3
-              class={cn(
-                "font-bold line-clamp-2",
-                "xs:col-start-2 xs:row-start-1",
-                "md:col-start-1 md:row-start-1",
-                "lg:col-start-2 lg:row-start-1",
-              )}
-            >
-              {tpd.title}
-            </h3>
-            <p
-              class={cn(
-                "mb-2 text-sm text-muted-foreground line-clamp-2",
-                "xs:mb-0 xs:line-clamp-6 xs:col-start-2 xs:row-start-2",
-                "md:line-clamp-2 md:mb-2 md:col-start-1 md:row-start-2",
-                "lg:mb-0 lg:line-clamp-6 lg:col-start-2 lg:row-start-2 lg:h-fit",
-              )}
-            >
-              {tpd.shortDescription}
-            </p>
-
-            <ImageSkeleton
-              class={cn(
-                "self-end max-w-48 w-full aspect-square place-self-center",
-                "xs:max-w-36 xs:col-start-1 xs:row-start-1 xs:row-span-2",
-                "md:max-w-48 md:col-start-1 md:row-start-3 md:row-span-1",
-                "lg:max-w-36 lg:col-start-1 lg:row-start-1 lg:row-span-2",
-              )}
-            >
-              <Image
-                src={resolveResourceImage(tpd.image) ?? tpd.image}
-                alt={title}
-                transition:name={tpd.title.replaceAll(" ", "")}
-                loading="eager"
-                width={192}
-                height={192}
-              />
-            </ImageSkeleton>
-            </UiCard>
-          </a>
-        ))
-      }
+      <div
+        data-drag-scroll
+        class="flex snap-x snap-mandatory overflow-x-auto md:col-span-3"
+        style="scrollbar-width: none;"
+      >
+        {similarPodcasts.map((tpd) => (
+          <div class="box-border flex shrink-0 basis-full snap-start px-3 py-2 pb-10 min-[480px]:basis-1/2 md:basis-1/3">
+            <PodcastCard podcast={tpd} />
+          </div>
+        ))}
+      </div>
     </section>
   </main>
 
