@@ -5,10 +5,14 @@ import TvShows from "@/components/TvShows.astro";
 import Footer from "@/sections/Footer.astro";
 ---
 
-<RestLayout title="English for Abroad - Resources">
+<RestLayout title="English for Abroad - Resources" showFixedCTA={false}>
   <meta name="robots" content="noindex, nofollow" slot="head" />
 
-  <main class="grow space-y-6 pb-8 md:space-y-8 md:pb-12">
+  <div id="global-carousel-loader" class="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-md transition-opacity duration-500">
+    <img src="/navbar-logo-spinner.svg" alt="Loading..." class="size-24" />
+  </div>
+
+  <main id="main-content" class="grow space-y-6 pb-8 md:space-y-8 md:pb-12 opacity-0 transition-opacity duration-700">
     <Podcasts />
 
     <TvShows />
@@ -16,5 +20,79 @@ import Footer from "@/sections/Footer.astro";
     <!-- <Movies /> -->
   </main>
 
-  <Footer />
+  <div id="footer-content" class="opacity-0 transition-opacity duration-700">
+    <Footer />
+  </div>
 </RestLayout>
+
+<script>
+  const MIN_WAIT_TIME = 800; // Minimum spinner duration (ms)
+  let loadTimeout: number;
+
+  const initLoader = () => {
+    // Only run if we are actually on the resources page
+    const loader = document.getElementById("global-carousel-loader");
+    if (!loader) return;
+
+    // Reset UI state in case it was cached by view transitions
+    loader.style.opacity = "1";
+    loader.style.display = "flex";
+    
+    const main = document.getElementById("main-content");
+    const footer = document.getElementById("footer-content");
+    if (main) main.classList.add("opacity-0");
+    if (footer) footer.classList.add("opacity-0");
+
+    let carouselsReadyCount = 0;
+    const startTime = Date.now();
+    
+    // We look for all un-initialized or initializing swiper containers
+    const carousels = document.querySelectorAll('swiper-container');
+    const total = carousels.length;
+
+    const hideLoader = () => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_WAIT_TIME - elapsed);
+
+      setTimeout(() => {
+        // 1. Reveal content smoothly
+        if (main) main.classList.remove("opacity-0");
+        if (footer) footer.classList.remove("opacity-0");
+
+        // 2. Hide loader
+        if (loader) {
+          loader.style.opacity = "0";
+          setTimeout(() => {
+            loader.style.display = "none";
+          }, 500); // Matches transition-opacity duration-500
+        }
+      }, remaining);
+    };
+
+    if (total === 0) {
+      hideLoader();
+      return;
+    }
+
+    const check = () => {
+      carouselsReadyCount++;
+      if (carouselsReadyCount >= total) {
+        document.removeEventListener('carousel-ready', check);
+        clearTimeout(loadTimeout);
+        hideLoader();
+      }
+    };
+
+    document.addEventListener('carousel-ready', check);
+
+    // Fallback just in case something stalls
+    clearTimeout(loadTimeout);
+    loadTimeout = window.setTimeout(() => {
+      document.removeEventListener('carousel-ready', check);
+      hideLoader();
+    }, 5000);
+  };
+
+  // Run on initial load and view transition navigation
+  document.addEventListener("astro:page-load", initLoader);
+</script>

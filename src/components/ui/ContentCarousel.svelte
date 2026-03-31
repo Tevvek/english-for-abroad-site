@@ -53,26 +53,15 @@
     }
 
     isReady = true;
+    document.dispatchEvent(new CustomEvent('carousel-ready'));
   });
 </script>
 
 <div class={cn("relative w-full", minHeightClass, containerClass)}>
-  {#if !isReady}
-    <div
-      class={cn("grid size-full place-items-center rounded-xl", minHeightClass)}
-    >
-      <LoaderCircle
-        class="size-8 animate-spin text-primary"
-        aria-hidden="true"
-      />
-      <span class="sr-only">Loading carousel</span>
-    </div>
-  {/if}
-
   <swiper-container
     bind:this={swiperEl}
     init="false"
-    class={cn(swiperClass, !isReady && "invisible absolute inset-0")}
+    class={cn(swiperClass, !isReady && "opacity-0")}
   >
     {#each items as item, index (`${keyPrefix}-${index}`)}
       <swiper-slide class={slideClass}>
