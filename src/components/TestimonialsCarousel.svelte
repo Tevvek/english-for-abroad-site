@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Star } from "lucide-svelte";
+  import ContentCarousel from "@/components/ui/ContentCarousel.svelte";
 
   interface Testimonial {
     student: string;
@@ -93,25 +94,33 @@
       platform: "Ringle",
     },
   ];
+
+  const breakpoints = {
+    768: { slidesPerView: 2, spaceBetween: 0 },
+    1024: { slidesPerView: 3, spaceBetween: 0 },
+    1440: { slidesPerView: 4, spaceBetween: 0 },
+  };
 </script>
 
-<div
-  class="flex snap-x snap-mandatory overflow-x-auto"
-  style="scrollbar-width: none;"
+<ContentCarousel
+  items={TESTIMONIALS}
+  keyPrefix="testimonial"
+  minHeightClass="min-h-[320px] md:min-h-[360px]"
+  slideClass="box-border h-auto px-3 py-2 pb-4 md:pb-6"
+  breakpoints={breakpoints}
 >
-  {#each TESTIMONIALS as testimonial (testimonial.student + testimonial.platform)}
-    <div class="box-border shrink-0 basis-full snap-start px-3 py-2 pb-4 md:basis-1/2 md:pb-6 lg:basis-1/3 min-[1440px]:basis-1/4">
-      <div class="space-y-2 rounded-xl border bg-card p-8 text-card-foreground shadow-sm">
-        <p class="line-clamp-6" title={testimonial.opinion}>
-          {testimonial.opinion}
-        </p>
-        <h3 class="text-lg font-bold">{testimonial.student}</h3>
-        <div class="flex text-primary" aria-hidden="true">
-          {#each Array.from({ length: 5 }) as _, index (index)}
-            <Star size={18} fill="currentColor" strokeWidth={1.6} />
-          {/each}
-        </div>
+  {#snippet children(item)}
+    {@const testimonial = item as Testimonial}
+    <div class="h-full space-y-2 rounded-xl border bg-card p-8 text-card-foreground shadow-sm">
+      <p class="line-clamp-6" title={testimonial.opinion}>
+        {testimonial.opinion}
+      </p>
+      <h3 class="text-lg font-bold">{testimonial.student}</h3>
+      <div class="flex text-primary" aria-hidden="true">
+        {#each Array.from({ length: 5 }) as _, index (index)}
+          <Star size={18} fill="currentColor" strokeWidth={1.6} />
+        {/each}
       </div>
     </div>
-  {/each}
-</div>
+  {/snippet}
+</ContentCarousel>

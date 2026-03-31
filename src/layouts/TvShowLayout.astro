@@ -9,7 +9,7 @@ import { getCollection } from "astro:content";
 import RestLayout from "./RestLayout.astro";
 import { Button } from "@/components/ui/button";
 import { Card as UiCard } from "@/components/ui/card";
-import TvShowCard from "@/components/TvShowCard.astro";
+import SimilarTvShowsCarousel from "@/components/svelte/SimilarTvShowsCarousel.svelte";
 
 const { frontmatter } = Astro.props;
 const { title, longDescription, image, theme, link } = frontmatter;
@@ -139,16 +139,8 @@ const resolvedImage = resolveResourceImage(image) ?? image;
       >
         Similar TV Shows
       </h2>
-      <div
-        data-drag-scroll
-        class="flex snap-x snap-mandatory overflow-x-auto md:col-span-3"
-        style="scrollbar-width: none;"
-      >
-        {similarTvShows.map((tpd) => (
-          <div class="box-border flex shrink-0 basis-full snap-start px-3 py-2 pb-10 min-[480px]:basis-1/2 md:basis-1/3">
-            <TvShowCard tvShow={tpd} />
-          </div>
-        ))}
+      <div class="md:col-span-3">
+        <SimilarTvShowsCarousel client:load tvShows={similarTvShows} />
       </div>
     </section>
   </main>

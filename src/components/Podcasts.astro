@@ -1,6 +1,6 @@
 ---
-import PodcastCard from "@/components/PodcastCard.astro";
 import PodcastsTags from "@/components/PodcastsTags.svelte";
+import PodcastsCarousel from "@/components/svelte/PodcastsCarousel.svelte";
 import { getCollection } from "astro:content";
 import resolveResourceImage from "@/utils/resolveResourceImage";
 import { PodcastsThemes } from "@/types/resources";
@@ -37,21 +37,12 @@ const podcastsByTheme = podcasts.reduce<Record<string, any[]>>((acc, p) => {
   {Object.values(PodcastsThemes).map((theme) => {
     const items: any[] = podcastsByTheme[theme] ?? [];
     return (
-      <div
-        data-podcast-theme={theme}
-        data-drag-scroll
-        class="flex snap-x snap-mandatory overflow-x-auto"
-        style="scrollbar-width: none;"
-        hidden={theme !== PodcastsThemes.Art}
-      >
-        {items.map((podcast) => (
-          <div class="box-border flex shrink-0 basis-full snap-start px-3 py-2 pb-10 min-[480px]:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 2xl:basis-[16.6666%]">
-            <PodcastCard podcast={podcast} />
-          </div>
-        ))}
-        {items.length === 0 && (
-          <div class="box-border flex shrink-0 basis-full snap-start px-3 py-2 pb-10 min-[480px]:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 2xl:basis-[16.6666%]">
-            <div class="flex h-full w-full items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
+      <div data-podcast-theme={theme} hidden={theme !== PodcastsThemes.Art}>
+        {items.length > 0 ? (
+          <PodcastsCarousel client:load podcasts={items} />
+        ) : (
+          <div class="px-3 py-2 pb-10">
+            <div class="flex min-h-[420px] items-center justify-center rounded-xl border bg-card p-4 shadow-sm md:min-h-[460px]">
               <p>Coming soon! 🚀</p>
             </div>
           </div>
