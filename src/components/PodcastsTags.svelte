@@ -12,10 +12,7 @@
   }>();
 </script>
 
-<div
-  class="flex gap-2 overflow-x-auto scroll-smooth px-4 md:px-8 py-4"
-  style="scrollbar-width: none;"
->
+<div class="flex gap-2 overflow-x-auto scroll-smooth px-4 md:px-8 py-4" style="scrollbar-width: none;">
   {#each Object.values(PodcastsThemes) as theme (theme)}
     <Button
       value={theme}
